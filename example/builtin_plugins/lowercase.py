@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def make_lowercase(s):
     return s.lower()
 

@@ -1,32 +1,36 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
-sys.path.append(os.path.split(os.path.dirname(__file__))[0])
+import logging
 from functools import partial
 from pluginbase import PluginBase
 
-
-# 为了更方便使用，计算相对于此处的路径。
+# 配置日志显示
+logging.basicConfig(level=logging.DEBUG,
+                    format="[%(asctime)s] %(filename)s[%(lineno)d]:"
+                           "%(levelname)s: %(message)s",
+                    datefmt='%Y-%m-%d %H:%M:%S')
+# 得到此文件所在文件夹，包装 get_path ，使容易获得插件位置
 here = os.path.abspath(os.path.dirname(__file__))
 get_path = partial(os.path.join, here)
 
 
-# 为"example.modules"设置一个插件库，并确保从 builtin_plugins 文件夹加载所有默认的内置插件。
+# 设置"example.modules"为插件库，并加载 builtin_plugins 文件夹的插件做为默认插件。
 plugin_base = PluginBase(package='example.plugins',
                          searchpath=[get_path('./builtin_plugins')])
 
 
 class Application(object):
-    """代表一个简单的示例应用程序."""
+    """一个简单的示例应用程序类."""
 
     def __init__(self, name):
-        # 每个应用都有一个名称
+        # 设置应用名称
         self.name = name
 
-        # 添加一个用于存储“格式化程序”的字典。这些格式化字符的函数由插件提供。
+        # 添加“字符串格式化程序”字典。格式化字符串函数由插件提供。
+        # key: 函数名 value: 格式化函数
         self.formatters = {}
 
-        # 并且从 "app_name/plugins" 文件夹加载插件的源代码。
+        # 从 "app_name/plugins" 文件夹加载插件的源代码。
         # 我们还传递应用程序名称作为标识符。
         # 这是可选的，但通过这样做插件将具有一致的内部模块名称，并允许pickle工作。
         self.source = plugin_base.make_plugin_source(
@@ -35,6 +39,7 @@ class Application(object):
 
         # 在这里我们列出了所有源代码知道的插件，加载它们并使用插件提供的“setup”函数来初始化插件。
         for plugin_name in self.source.list_plugins():
+            logging.debug(name +' ' + plugin_name)
             plugin = self.source.load_plugin(plugin_name)
             plugin.setup(self)
 

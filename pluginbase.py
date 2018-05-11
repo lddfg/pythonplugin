@@ -3,8 +3,7 @@
     pluginbase
     ~~~~~~~~~~
 
-    Pluginbase is a module for Python that provides a system for building
-    plugin based applications.
+    Pluginbase是Python的一个模块，提供构建基于插件的应用系统。
 
     :copyright: (c) Copyright 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
